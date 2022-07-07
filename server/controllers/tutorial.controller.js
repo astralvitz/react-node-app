@@ -1,5 +1,6 @@
 const db = require("../models");
 const Tutorial = db.tutorials;
+const Comment = db.comments;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Tutorial
@@ -34,7 +35,7 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
     const title = req.query.title;
     var condition = title ? { title: { [Op.iLike]: `%${title}%` } } : null;
-    Tutorial.findAll({ where: condition })
+    Tutorial.findAll({ where: condition, include: ["comments"] })
       .then(data => {
         res.send(data);
       })
@@ -49,7 +50,7 @@ exports.findAll = (req, res) => {
 // Find a single Tutorial with an id
 exports.findOne = (req, res) => {
     const id = req.params.id;
-    Tutorial.findByPk(id)
+    Tutorial.findByPk(id, { include: ["comments"] })
       .then(data => {
         if (data) {
           res.send(data);
@@ -64,6 +65,26 @@ exports.findOne = (req, res) => {
           message: "Error retrieving Tutorial with id=" + id
         });
       });
+};
+
+// Find a single Comment with an id
+exports.findOneComment = (req, res) => {
+  const id = req.params.id;
+  Comment.findByPk(id, { include: ["tutorial"] })
+    .then(data => {
+      if (data) {
+        res.send(data);
+      } else {
+        res.status(404).send({
+          message: `Cannot find Comment with id=${id}.`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving Comment with id=" + id
+      });
+    });
 };
 
 // Update a Tutorial by the id in the request
@@ -141,6 +162,34 @@ exports.findAllPublished = (req, res) => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while retrieving tutorials."
+      });
+    });
+};
+
+// Create and Save new Comments
+exports.createComment = (req, res) => {
+  // Validate request
+  if (!req.body.name || !req.body.text || !req.body.tutorialId) {
+    res.status(400).send({
+      message: "Content can not be empty!"
+    });
+    return;
+  }
+  // Create a Comment
+  const comment = {
+    name: req.body.name,
+    text: req.body.text,
+    tutorialId: req.body.tutorialId,
+  };
+  // Save Tutorial in the database
+  Comment.create(comment)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while creating the Comment."
       });
     });
 };

@@ -14,18 +14,7 @@ const Sequelize = require('sequelize');
 //   }
 // });
 
-//heroku dev
-// const sequelize = new Sequelize(dbConfig.heroku_connection_string);
-// sequelize.dialect = dbConfig.dialect;
-// sequelize.dialectOptions =  {
-//   ssl: {
-//     require: true,
-//     rejectUnauthorized: false
-//   }
-// };
-
-const url = dbConfig.heroku_connection_string;
-const sequelize = new Sequelize(url, {
+const sequelize = new Sequelize(dbConfig.db_conn, {
   dialect: dbConfig.dialect,
   dialectOptions: {
     ssl: {
@@ -38,5 +27,13 @@ const sequelize = new Sequelize(url, {
 const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
+
 db.tutorials = require("./tutorial.model.js")(sequelize, Sequelize);
+db.comments = require("./comment.model.js")(sequelize, Sequelize);
+db.tutorials.hasMany(db.comments, { as: "comments" });
+db.comments.belongsTo(db.tutorials, {
+  foreignKey: "tutorialId",
+  as: "tutorial"
+});
+
 module.exports = db;

@@ -1,6 +1,6 @@
-require('dotenv').config();
+const dotenv = require('dotenv').config();
 
-const { DB_HOST, DB_USER, DB_PW, PG_DEV_CONNECTION_STRING } = process.env;
+const { DB_HOST, DB_USER, DB_PW, DB_CONN } = process.env;
 
 module.exports = {
     "username": DB_USER,
@@ -8,7 +8,7 @@ module.exports = {
     "database": "database_development",
     "host": DB_HOST,
     "dialect": "postgres",
-    "heroku_connection_string": PG_DEV_CONNECTION_STRING
+    "db_conn": DB_CONN
     // "development": {
     //     "username": DB_USER,
     //     "password": DB_PW,
