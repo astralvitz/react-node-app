@@ -1,7 +1,10 @@
 const db = require("../models");
 const Tutorial = db.tutorials;
 const Comment = db.comments;
+const Tag = db.tags;
 const Op = db.Sequelize.Op;
+
+/* TUTORIALS */
 
 // Create and Save a new Tutorial
 exports.create = (req, res) => {
@@ -65,26 +68,6 @@ exports.findOne = (req, res) => {
           message: "Error retrieving Tutorial with id=" + id
         });
       });
-};
-
-// Find a single Comment with an id
-exports.findOneComment = (req, res) => {
-  const id = req.params.id;
-  Comment.findByPk(id, { include: ["tutorial"] })
-    .then(data => {
-      if (data) {
-        res.send(data);
-      } else {
-        res.status(404).send({
-          message: `Cannot find Comment with id=${id}.`
-        });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error retrieving Comment with id=" + id
-      });
-    });
 };
 
 // Update a Tutorial by the id in the request
@@ -166,6 +149,8 @@ exports.findAllPublished = (req, res) => {
     });
 };
 
+/* COMMENTS */
+
 // Create and Save new Comments
 exports.createComment = (req, res) => {
   // Validate request
@@ -181,7 +166,7 @@ exports.createComment = (req, res) => {
     text: req.body.text,
     tutorialId: req.body.tutorialId,
   };
-  // Save Tutorial in the database
+  // Save Comment in the database
   Comment.create(comment)
     .then(data => {
       res.send(data);
@@ -190,6 +175,26 @@ exports.createComment = (req, res) => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while creating the Comment."
+      });
+    });
+};
+
+// Find a single Comment with an id
+exports.findOneComment = (req, res) => {
+  const id = req.params.id;
+  Comment.findByPk(id, { include: ["tutorial"] })
+    .then(data => {
+      if (data) {
+        res.send(data);
+      } else {
+        res.status(404).send({
+          message: `Cannot find Comment with id=${id}.`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving Comment with id=" + id
       });
     });
 };
