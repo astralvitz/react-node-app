@@ -1,4 +1,5 @@
 const db = require("../models");
+const utils = require("../utils");
 const Tutorial = db.tutorials;
 const Comment = db.comments;
 const Tag = db.tags;
@@ -36,9 +37,14 @@ exports.create = (req, res) => {
 
 // Retrieve all Tutorials from the database.
 exports.findAll = (req, res) => {
-    const title = req.query.title;
+    const { page, size, title } = req.query;
     var condition = title ? { title: { [Op.iLike]: `%${title}%` } } : null;
-    Tutorial.findAll({ where: condition, include: [
+    const { limit, offset } = utils.getPagination(page, size);
+    Tutorial.findAndCountAll({
+      limit,
+      offset,
+      where: condition,
+      include: [
       "comments",
       {
         model: Tag,
@@ -53,7 +59,8 @@ exports.findAll = (req, res) => {
       }
     ] })
       .then(data => {
-        res.send(data);
+        const response = utils.getPagingData(data, page, limit);
+        res.send(response);
       })
       .catch(err => {
         res.status(500).send({
@@ -163,9 +170,12 @@ exports.deleteAll = (req, res) => {
 
 // Find all published Tutorials
 exports.findAllPublished = (req, res) => {
-    Tutorial.findAll({ where: { published: true } })
+    const { page, size } = req.query;
+    const { limit, offset } = utils.getPagination(page, size);
+    Tutorial.findAndCountAll({ where: { published: true }, limit, offset })
     .then(data => {
-      res.send(data);
+      const response = utils.getPagingData(data, page, limit);
+      res.send(response);
     })
     .catch(err => {
       res.status(500).send({
