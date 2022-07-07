@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 
 var corsOptions = {
-  origin: "http://localhost:3001"
+  origin: "http://localhost:3000"
 };
 app.use(cors(corsOptions));
 
