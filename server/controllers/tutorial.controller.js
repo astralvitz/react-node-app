@@ -38,7 +38,20 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
     const title = req.query.title;
     var condition = title ? { title: { [Op.iLike]: `%${title}%` } } : null;
-    Tutorial.findAll({ where: condition, include: ["comments"] })
+    Tutorial.findAll({ where: condition, include: [
+      "comments",
+      {
+        model: Tag,
+        as: "tags",
+        attributes: ["id", "name"],
+        through: {
+          attributes: [],
+        },
+        // through: {
+        //   attributes: ["tag_id", "tutorial_id"],
+        // },
+      }
+    ] })
       .then(data => {
         res.send(data);
       })
@@ -53,7 +66,20 @@ exports.findAll = (req, res) => {
 // Find a single Tutorial with an id
 exports.findOne = (req, res) => {
     const id = req.params.id;
-    Tutorial.findByPk(id, { include: ["comments"] })
+    Tutorial.findByPk(id, { include: [
+      "comments",
+      {
+        model: Tag,
+        as: "tags",
+        attributes: ["id", "name"],
+        through: {
+          attributes: [],
+        },
+        // through: {
+        //   attributes: ["tag_id", "tutorial_id"],
+        // },
+      }
+    ] })
       .then(data => {
         if (data) {
           res.send(data);
