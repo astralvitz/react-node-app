@@ -15,7 +15,17 @@ const Sequelize = require('sequelize');
 // });
 
 //heroku dev
-const sequelize = new Sequelize(dbConfig.heroku_connection_string, {
+// const sequelize = new Sequelize(dbConfig.heroku_connection_string);
+// sequelize.dialect = dbConfig.dialect;
+// sequelize.dialectOptions =  {
+//   ssl: {
+//     require: true,
+//     rejectUnauthorized: false
+//   }
+// };
+
+const url = dbConfig.heroku_connection_string;
+const sequelize = new Sequelize(url, {
   dialect: dbConfig.dialect,
   dialectOptions: {
     ssl: {
