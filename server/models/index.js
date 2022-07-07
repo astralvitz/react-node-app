@@ -30,12 +30,3 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.tutorials = require("./tutorial.model.js")(sequelize, Sequelize);
 module.exports = db;
-
-// sequelize
-// .authenticate()
-// .then(() => {
-// console.log('Connection has been established successfully.');
-// })
-// .catch(err => {
-// console.error('Unable to connect to the database:', err);
-// });
