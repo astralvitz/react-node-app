@@ -44,6 +44,8 @@ app.get("/api", (req, res) => {
 
 // tutorial routes
 require("./routes/tutorial.routes")(app);
+// tags routes
+require("./routes/tag.routes")(app);
 
 // All other GET requests not handled before will return our React app
 app.get('*', (req, res) => {

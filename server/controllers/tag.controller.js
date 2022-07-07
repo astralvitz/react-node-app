@@ -56,8 +56,8 @@ exports.findAllTags = (req, res) => {
 };
 
 // Find a Tag for a given Tag id
-exports.findOneTag = (req, res) => {
-  Tag.findByPk(req.body.id, {
+exports.findOne = (req, res) => {
+  Tag.findByPk(req.params.id, {
     include: [
       {
         model: Tutorial,
@@ -70,7 +70,13 @@ exports.findOneTag = (req, res) => {
     ]
   })
     .then(data => {
-      res.send(data);
+      if (!data) {
+        res.status(404).send({
+          message: "Did not find tag"
+        });
+      } else {
+        res.send(data);
+      }
     })
     .catch(err => {
       res.status(500).send({
